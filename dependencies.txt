@@ -1,0 +1,8 @@
+numpy
+pandas
+shapely
+matplotlib
+requests
+UliEngineering
+BeautifulSoup4
+keras
