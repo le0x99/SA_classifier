@@ -21,12 +21,12 @@ def predict_img(model, img_path):
     
 
 
-def predict_batch(model, img_dir):
+def predict_batch(model, img_dir, batch_size):
     img_width, img_height = 150, 150
     images = os.listdir(img_dir)
     images = [ to_array(load_img(img_dir+img, target_size=(img_width, img_height))) for img in images ]
     images = np.vstack([ np.expand_dims(img, axis=0) for img in images ])
-    return model.predict(images)
+    return model.predict(images, batch_size=batch_size)
 
 def img_to_disk(images, destination):
     if type(images) != list:
