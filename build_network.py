@@ -5,15 +5,14 @@ from keras.layers import Dropout, Flatten, Dense
 from keras import applications, optimizers
 
 
-config_dir = "/Users/Leonard/Desktop/NN_imp/config/"
-train_data_dir = "/Users/Leonard/Desktop/NN_imp/data/training"
-validation_data_dir = "/Users/Leonard/Desktop/NN_imp/data/validation"
+config_dir = "/Users/Leonard/Desktop/NN_imp/SA_classifier/config/"
+train_data_dir = "/Users/Leonard/Desktop/NN_imp/SA_classifier/data/training"
+validation_data_dir = "/Users/Leonard/Desktop/NN_imp/SA_classifier/data/validation"
 top_model_path = config_dir+"model_bn_weighted.h5"
 top_model_weights_path = config_dir+"bottleneck_weights.h5"
 
 img_width, img_height = 150, 150
-nb_train_samples = 160
-nb_validation_samples = 40
+nb_train_samples, nb_validation_samples = 400, 40
 epochs, batch_size = 50, 16
 
 
@@ -31,4 +30,4 @@ top_model = load_model(top_model_path)
 full_model = Model(inputs=base_model.input, outputs=top_model(base_model.output))
 
 # save the full model
-full_model.save("SA_classifier.h5")
+full_model.save(config_dir+"SA_classifier.h5")
