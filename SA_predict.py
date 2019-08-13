@@ -3,13 +3,17 @@ from keras.models import load_model
 import requests
 from keras.preprocessing.image import img_to_array as to_array, load_img 
 import numpy as np, os
+import warnings
+
 
 def load_classifier():
-    model = load_model('/Users/Leonard/Desktop/NN_imp/SA_classifier/config/SA_classifier.h5')
-    model.compile(loss='binary_crossentropy',
-              optimizer='rmsprop',
-              metrics=['accuracy'])
-    return model
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        model = load_model('/Users/Leonard/Desktop/NN_imp/SA_classifier/config/SA_classifier.h5')
+        model.compile(loss='binary_crossentropy',
+                  optimizer='rmsprop',
+                  metrics=['accuracy'])
+        return model
 
 
 def predict_img(model, img_path): 
