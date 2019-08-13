@@ -29,12 +29,20 @@ def predict_batch(model, img_dir, batch_size):
     images = np.vstack([ np.expand_dims(img, axis=0) for img in images ])
     return model.predict(images, batch_size=batch_size)
 
-def img_to_disk(images, destination):
+def img_to_disk(images, destination, randomize=False):
     if type(images) != list:
         images = [images]
-    for i in range(len(images)):
-        response = requests.get(images[i])
-        with open(destination+str(i)+".jpg", 'wb') as f:
-            f.write(response.content)
+    if not randomize:
+        for i in range(len(images)):
+            response = requests.get(images[i])
+            with open(destination+str(i)+".jpg", 'wb') as f:
+                f.write(response.content)
+    else:
+        import random
+        for i in range(len(images)):
+            r = random.randint(55, 555)+random.randint(666, 777) 
+            response = requests.get(images[i])
+            with open(destination+str(i+r)+".jpg", 'wb') as f:
+                f.write(response.content)
 
     
