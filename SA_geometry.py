@@ -3,6 +3,7 @@
 
 import numpy as np
 import pandas as pd
+import sys
 import requests
 from math import radians, sin, asin, cos, tan, atan, sqrt
 import matplotlib.pyplot as plt
@@ -10,7 +11,11 @@ from shapely.geometry import Point, LineString, Polygon, MultiPoint, MultiPolygo
 import shapely
 from UliEngineering.Math.Coordinates import BoundingBox
 
-
+if 'ipykernel' in sys.modules:
+	%matplotlib inline
+	%config InlineBackend.figure_format = 'retina'
+	plt.rcParams["figure.dpi"] = 86
+	plt.rcParams["figure.figsize"] = (10,5)
 
 def plot(obj, col, col2="grey", size=2.33):
 	
