@@ -15,11 +15,11 @@ from keras import applications
 #### Pre-Settings
 
 
-train_data_dir = "/Users/Leonard/Desktop/NN_imp/data/training"
-validation_data_dir = "/Users/Leonard/Desktop/NN_imp/data/validation"
-config_dir = "/Users/Leonard/Desktop/NN_imp/config/"
+train_data_dir = "/Users/Leonard/Desktop/NN_imp/SA_classifier/data/training"
+validation_data_dir = "/Users/Leonard/Desktop/NN_imp/SA_classifier/data/validation"
+config_dir = "/Users/Leonard/Desktop/NN_imp/SA_classifier/config/"
 img_width, img_height = 150, 150
-nb_train_samples, nb_validation_samples = 160, 40
+nb_train_samples, nb_validation_samples = 400, 40
 epochs, batch_size = 50, 16
 
 #### Get the bottleneck features
