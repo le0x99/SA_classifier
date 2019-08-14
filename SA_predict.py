@@ -3,7 +3,8 @@ from keras.models import load_model
 import requests
 from PIL import Image
 from io import BytesIO
-from keras.preprocessing.image import img_to_array as to_array, load_img 
+from keras.preprocessing.image import img_to_array as to_array, load_img
+import pandas as pd
 import numpy as np, os
 
 
