@@ -55,7 +55,7 @@ def to_img(url, size="original"):
     return img.resize(size) if size != "original" else img
 
                 
-def classify(data):
+def classify(data, to_csv=True):
     model = load_classifier()
     model = load_classifier()
     urls = list(data["photo"])
@@ -65,6 +65,7 @@ def classify(data):
         pred = predict_img(model=model, img=img)
         predictions.append(pred[0][0])
     data["pred"] = predictions
+    data.to_csv("result_data.csv") if to_csv
     return data
             
         
