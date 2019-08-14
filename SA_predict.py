@@ -1,8 +1,11 @@
 
 from keras.models import load_model
 import requests
+from PIL import Image
+from io import BytesIO
 from keras.preprocessing.image import img_to_array as to_array, load_img 
 import numpy as np, os
+
 
 
 def load_classifier():
@@ -13,9 +16,9 @@ def load_classifier():
     return model
 
 
-def predict_img(model, img_path): 
+def predict_img(model, img=None, img_path=None): 
     img_width, img_height = 150, 150
-    img = load_img(img_path, target_size=(img_width, img_height))
+    img = load_img(img_path, target_size=(img_width, img_height)) if img_path!=None else img
     x = to_array(img)
     x = np.expand_dims(x, axis=0)
     return model.predict(x)
@@ -35,7 +38,7 @@ def img_to_disk(images, destination, randomize=False):
     if not randomize:
         for url in images:
             response = requests.get(url)
-            with open(destination+url+".jpg", 'wb') as f:
+            with open(destination+url.lstrip("https://").replace("/", "_")+".jpg", 'wb') as f:
                 f.write(response.content)
     else:
         import random
@@ -44,5 +47,30 @@ def img_to_disk(images, destination, randomize=False):
             response = requests.get(images[i])
             with open(destination+str(i+r)+".jpg", 'wb') as f:
                 f.write(response.content)
+                
+                
+def to_img(url, size="original"):
+    response = requests.get(url)
+    img = Image.open(BytesIO(response.content))
+    return img.resize(size) if size != "original" else img
+
+                
+def classify(data):
+    model = load_classifier()
+    model = load_classifier()
+    urls = list(data["photo"])
+    predictions = []
+    for url in urls:
+        img = to_img(url=url, size=(150, 150))
+        pred = predict_img(model=model, img=img)
+        predictions.append(pred[0][0])
+    data["pred"] = predictions
+    return data
+            
+        
+        
+        
+    
+    
 
     
