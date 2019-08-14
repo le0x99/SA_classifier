@@ -66,7 +66,7 @@ def classify(data, to_csv=True):
         pred = predict_img(model=model, img=img)
         predictions.append(pred[0][0])
     data["pred"] = predictions
-    data.to_csv("result_data.csv") if to_csv
+    data.to_csv("result_data.csv") if to_csv else None
     return data
             
         
