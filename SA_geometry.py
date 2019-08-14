@@ -201,15 +201,14 @@ def gsv_point(facade, target, radius=15):
     data = response.json()
     if data["status"] == "OK":
         gsv_point = Point((data["location"]["lat"], data["location"]["lng"]))
-	try:
+	if type(target) == shapely.geometry.multipolygon.MultiPolygon:
 		for t in target:
 		    if facade.touches(t.boundary) or  facade.within(t.boundary):
 			if gsv_point.within(t) or gsv_point.touches(t):
 			    return gsv_point
-	except:
-		return gsv_point
-    else:        
-        return 
+	else: return gsv_point
+
+    else:  return       
     
         
 def angle(facade):
