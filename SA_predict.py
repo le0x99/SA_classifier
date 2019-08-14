@@ -33,9 +33,9 @@ def img_to_disk(images, destination, randomize=False):
     if type(images) != list:
         images = [images]
     if not randomize:
-        for i in range(len(images)):
-            response = requests.get(images[i])
-            with open(destination+str(i)+".jpg", 'wb') as f:
+        for url in images:
+            response = requests.get(url)
+            with open(destination+url+".jpg", 'wb') as f:
                 f.write(response.content)
     else:
         import random
