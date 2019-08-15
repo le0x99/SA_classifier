@@ -279,6 +279,6 @@ def get_gsv_data(facades, target, photogeometric_fov=True, as_dataframe=False):
         f, g = i["facade"], i["gsv_point"]
         i["dist"] = haversine(centroid(f), centroid(g))
         i["length"] = haversine(list(f.coords)[0], list(f.coords)[1])
-        i["fov"] = 2 * atan(i["length"]/(2*i["dist"])) * 100 if photogeometric_fov else 80
+        i["fov"] = 2 * atan(i["length"]/(2*i["dist"])) * 100 if photogeometric_fov else 90
         i["photo"] = "https://maps.googleapis.com/maps/api/streetview?size=640x640&location="+str(centroid(f)[0])+"%2C"+str(centroid(f)[1])+"&source=outdoor&radius=13&pitch=10&fov="+str(i["fov"])+"&key=AIzaSyCrjQChUxWzzcsRQt0SFeomIC0jN5vaDBo"
     return data if not as_dataframe else pd.DataFrame(data)
