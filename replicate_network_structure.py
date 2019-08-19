@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sun Aug 18 17:33:04 2019
-
 @author: Leonard
 """
 
@@ -79,10 +78,12 @@ Dense(256, activation='relu'),
 Dropout(0.5),
 Dense(256, activation='relu'),
 Dropout(0.5),
+Dense(256, activation='relu'),
+Dropout(0.5),
 Dense(1, activation='sigmoid')
 ])
 
 #show structure of the network
-SA_classifer.summary()
+SA_classifier.summary()
 #save structure
-plot_model(SA_, show_shapes=True,  to_file='VGG_full.png')
+plot_model(SA_classifier, show_shapes=True,  to_file='VGG_modified_SA.png')
