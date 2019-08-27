@@ -192,11 +192,12 @@ def segment(line_list, size=10):
     return line_list if l1==l2 else segment(line_list)
 
 
-def gsv_point(facade, target, radius=15):
+def gsv_point(facade, target):
     
     """locates the closest gsv point and returns its (lat, lon) as a Point Object
          Checks if the located gsv-point is within the corresponding
          area of the target polygon which belongs to the input facade"""
+    radius = 15
     p = list(facade.centroid.coords)[0]
     url = "https://maps.googleapis.com/maps/api/streetview/metadata?size=640x640&location="+str(p[0])+"%2C"+str(p[1])+"&source=outdoor&radius="+str(radius)+"&pitch=12&key=AIzaSyCrjQChUxWzzcsRQt0SFeomIC0jN5vaDBo"
     response = requests.get(url)
@@ -280,5 +281,5 @@ def get_gsv_data(facades, target, photogeometric_fov=True, as_dataframe=False):
         i["dist"] = haversine(centroid(f), centroid(g))
         i["length"] = haversine(list(f.coords)[0], list(f.coords)[1])
         i["fov"] = 2 * atan(i["length"]/(2*i["dist"])) * 100 if photogeometric_fov else 90
-        i["photo"] = "https://maps.googleapis.com/maps/api/streetview?size=640x640&location="+str(centroid(f)[0])+"%2C"+str(centroid(f)[1])+"&source=outdoor&radius=13&pitch=10&fov="+str(i["fov"])+"&key=AIzaSyCrjQChUxWzzcsRQt0SFeomIC0jN5vaDBo"
+        i["photo"] = "https://maps.googleapis.com/maps/api/streetview?size=640x640&location="+str(centroid(f)[0])+"%2C"+str(centroid(f)[1])+"&source=outdoor&radius=15&pitch=10&fov="+str(i["fov"])+"&key=AIzaSyCrjQChUxWzzcsRQt0SFeomIC0jN5vaDBo"
     return data if not as_dataframe else pd.DataFrame(data)
