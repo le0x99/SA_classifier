@@ -18,7 +18,7 @@ if 'ipykernel' in sys.modules:
 	style.use("seaborn")
 
 def plot(obj, col, col2="grey", size=2.33):
-	
+
     """Function to easier plot shapely objects,
 Plottable : LineStrings, Polys, MultiPolys, tuples"""
     with warnings.catch_warnings():
@@ -26,7 +26,7 @@ Plottable : LineStrings, Polys, MultiPolys, tuples"""
             plt.axis("off")
             if type(obj) == shapely.geometry.polygon.Polygon:
                 x, y = obj.exterior.xy    
-                fig = plt.figure(1, figsize=(7,5.5), dpi=90)
+                fig = plt.figure(1, figsize=(12,7.5), dpi=120)
                 ax = fig.add_subplot(111)
                 ax.plot(y, x, color=col, alpha=0.7,
                 linewidth=3, solid_capstyle='round', zorder=2)
@@ -37,7 +37,7 @@ Plottable : LineStrings, Polys, MultiPolys, tuples"""
             elif type(obj) == list and type(obj[0]) == shapely.geometry.linestring.LineString:
                 for i in obj:
                     x, y = i.xy
-                    fig = plt.figure(1, figsize=(7,5.5), dpi=90)
+                    fig = plt.figure(1, figsize=(12,7.5), dpi=120)
                     ax = fig.add_subplot(111)
                     ax.plot(y, x, color=col, alpha=0.7,
                     linewidth=3, solid_capstyle='round', zorder=2)
@@ -45,7 +45,7 @@ Plottable : LineStrings, Polys, MultiPolys, tuples"""
                 plot([obj], col)
             elif type(obj) == tuple:
                 x, y = obj[1], obj[0]
-                plt.plot(x, y, "o", color=col, markersize = size)
+                plt.plot(x, y, "o", color=col, ms = 5)
             elif type(obj) == shapely.geometry.point.Point:
                 plot(list(obj.coords)[0], col)
             elif type(obj) == list and type(obj[0]) == shapely.geometry.point.Point:
