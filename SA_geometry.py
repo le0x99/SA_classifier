@@ -192,16 +192,17 @@ def segment(line_list, size=10):
     return line_list if l1==l2 else segment(line_list)
 
 
-def gsv_point(facade, target):
+def gsv_point(facade, target, radius=15, meta_only=False):
     
     """locates the closest gsv point and returns its (lat, lon) as a Point Object
          Checks if the located gsv-point is within the corresponding
          area of the target polygon which belongs to the input facade"""
-    radius = 15
     p = list(facade.centroid.coords)[0]
     url = "https://maps.googleapis.com/maps/api/streetview/metadata?size=640x640&location="+str(p[0])+"%2C"+str(p[1])+"&source=outdoor&radius="+str(radius)+"&pitch=12&key=AIzaSyCrjQChUxWzzcsRQt0SFeomIC0jN5vaDBo"
     response = requests.get(url)
     data = response.json()
+    if meta_only:
+        return data
     if data["status"] == "OK":
         gsv_point = Point((data["location"]["lat"], data["location"]["lng"]))
         if type(target) == shapely.geometry.multipolygon.MultiPolygon:        
@@ -210,7 +211,7 @@ def gsv_point(facade, target):
                     if gsv_point.within(t) or gsv_point.touches(t):
                         return gsv_point
         else: return gsv_point
-    else: return 
+    else: return
     
         
 def angle(facade):
