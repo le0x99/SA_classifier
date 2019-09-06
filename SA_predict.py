@@ -18,7 +18,7 @@ def load_classifier():
 
 
 def predict_img(model, img=None, img_path=None): 
-    img_width, img_height = 150, 150
+    img_width, img_height = 224, 224
     img = load_img(img_path, target_size=(img_width, img_height)) if img_path!=None else img
     x = to_array(img)
     x = np.expand_dims(x, axis=0)
@@ -27,7 +27,7 @@ def predict_img(model, img=None, img_path=None):
 
 
 def predict_batch(model, img_dir, batch_size):
-    img_width, img_height = 150, 150
+    img_width, img_height = 224, 224
     images = os.listdir(img_dir)
     images = [ to_array(load_img(img_dir+img, target_size=(img_width, img_height))) for img in images ]
     images = np.vstack([ np.expand_dims(img, axis=0) for img in images ])
@@ -62,7 +62,7 @@ def classify(data, to_csv=True):
     urls = list(data["photo"])
     predictions = []
     for url in urls:
-        img = to_img(url=url, size=(150, 150))
+        img = to_img(url=url, size=(224, 224))
         pred = predict_img(model=model, img=img)
         predictions.append(pred[0][0])
     data["pred"] = predictions
