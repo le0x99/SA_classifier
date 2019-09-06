@@ -221,7 +221,7 @@ def gsv_point(facade:shapely.geometry.LineString,
     data = response.json()
     if meta_only:
         return data
-    if data["status"] == "OK" and "Google" in data["source"]:
+    if data["status"] == "OK" and "Google" in data["copyright"]:
         gsv_point = Point((data["location"]["lat"], data["location"]["lng"]))
         if not gsv_point.within(bbox):
             return
