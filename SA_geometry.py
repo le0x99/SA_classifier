@@ -138,7 +138,9 @@ def extract_target_polygon(poly_bbox:shapely.geometry.Polygon,
         return target
 
    
-def extract_streets(bbox:list, packed=True, geom=True) -> list or dict:
+def extract_streets(bbox:list,geom=True,
+                    show_query=False,
+                    include_footways=False) -> list:
     """Extracts the streets within the bbox as linestring objects,
     if packed==True it returns only a list of LineString objects (streets)"""
     d = dict() #every way has an id with 2 bounds
@@ -148,24 +150,32 @@ def extract_streets(bbox:list, packed=True, geom=True) -> list or dict:
 [out:json][timeout:800];
 (way["highway"](bbox);>;);
 out body geom;
-
 """.replace("bbox",str(bbox).replace("[","").replace("]","")).replace("\n", "")
     overpass_query = overpass_query.replace("geom", "") if not geom else overpass_query
     response = requests.get(overpass_url, params={'data': overpass_query})
+    print(overpass_query) if show_query else None
     data = response.json()
-    for element in data["elements"]:
-        if element["type"]=="way":
-            p1 = (element["geometry"][0]["lat"], element["geometry"][0]["lon"])
-            p2 = (element["geometry"][-1]["lat"], element["geometry"][-1]["lon"])
-            d[element["id"]]=LineString([p1,p2])
-
-    if packed==True:
-        way_lines = list()
-        for line in d:
-            way_lines.append(d[line])
-        return way_lines
-
-    return d
+    minors = ['pedestrian',
+              'track',
+              'raceway',
+              'footway',
+              'path',
+              'horseway',
+              'steps',
+              'sidewalk',
+              'cycleway',
+              'lane',
+              'track',
+              'construction']
+    minors.remove("footway") if include_footways else None
+    is_street = lambda way : way["tags"]["highway"] not in minors
+    streets = [ element for element in data["elements"] if element["type"] == "way" and is_street(element) ]
+    results = []
+    for street in streets:
+         p1 = (street["geometry"][0]["lat"], street["geometry"][0]["lon"])
+         p2 = (street["geometry"][-1]["lat"], street["geometry"][-1]["lon"])
+         results.append(LineString([p1, p2]))
+    return results
 
 
 def haversine(c1:tuple, c2:tuple) -> float:
@@ -198,19 +208,19 @@ def segment(line_list:list, size:int=10) -> list:
 
 
 def gsv_point(facade:shapely.geometry.LineString,
-	      target:shapely.geometry.MultiPolygon,
+	      target:shapely.geometry.MultiPolygon=None,
 	      radius:int=15, meta_only=False) -> shapely.geometry.Point or dict :
     
     """locates the closest gsv point and returns its (lat, lon) as a Point Object
          Checks if the located gsv-point is within the corresponding
          area of the target polygon which belongs to the input facade"""
-    p = list(facade.centroid.coords)[0]
+    p = list(facade.centroid.coords)[0] if type(facade) == shapely.geometry.LineString else facade
     url = "https://maps.googleapis.com/maps/api/streetview/metadata?size=640x640&location="+str(p[0])+"%2C"+str(p[1])+"&source=outdoor&radius="+str(radius)+"&pitch=12&key=AIzaSyCrjQChUxWzzcsRQt0SFeomIC0jN5vaDBo"
     response = requests.get(url)
     data = response.json()
     if meta_only:
         return data
-    if data["status"] == "OK":
+    if data["status"] == "OK" and "Google" in data["source"]:
         gsv_point = Point((data["location"]["lat"], data["location"]["lng"]))
         if type(target) == shapely.geometry.multipolygon.MultiPolygon:        
             for t in target:
