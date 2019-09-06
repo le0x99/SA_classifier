@@ -17,7 +17,7 @@ if 'ipykernel' in sys.modules:
 	from matplotlib import style
 	style.use("seaborn")
 
-def plot(obj, col, col2="grey", size=2.33):
+def plot(obj:None, col:str, col2:str="grey", size:float=2.33) -> None:
 
     """Function to easier plot shapely objects,
 Plottable : LineStrings, Polys, MultiPolys, tuples"""
@@ -56,7 +56,7 @@ Plottable : LineStrings, Polys, MultiPolys, tuples"""
                     plot(i, col, size)
                 
             
-def create_bbox(p, polygonize=True):
+def create_bbox(p:tuple, polygonize=True) -> shapely.geometry.Polygon or list:
     """creates a bbox around a centroid within ~ 65m"""
     c = [
     (p[0]+0.0006729999999990355,p[1]),
@@ -71,7 +71,7 @@ def create_bbox(p, polygonize=True):
     return bbox if not polygonize else Polygon([ (bbox[0], bbox[1]), (bbox[0], bbox[3]), (bbox[2], bbox[3]), (bbox[2], bbox[1])  ])
 
  
-def extract_polygons(bbox):
+def extract_polygons(bbox:list) -> dict:
     """Extract Polygon Objects from bbox area,
     returns a dictionary with ID as key and the corresponding polygon object as value"""
     d = dict()
@@ -104,7 +104,9 @@ out skel geom;
             d[element["id"]]=Polygon(nodes)
     return d
 
-def aggregate_polygons(polygons, poly_bbox, intersect=False):
+def aggregate_polygons(polygons:dict,
+		       poly_bbox:shapely.geometry.Polygon,
+		       intersect=False) -> shapely.geometry.MultiPolygon:
     """returns a MultiPolygon Object from all Buildings"""
     if intersect:
         return MultiPolygon([poly_bbox.intersection(polygons[i]) for i in polygons])
@@ -113,7 +115,8 @@ def aggregate_polygons(polygons, poly_bbox, intersect=False):
 
 
 
-def extract_target_polygon(poly_bbox, polygons, symmetric = False):
+def extract_target_polygon(poly_bbox:shapely.geometry.Polygon,
+			   polygons:dict, symmetric=False) -> shapely.geometry.MultiPolygon:
     """Creates the target polygon"""
     target = poly_bbox
     if symmetric:
@@ -134,7 +137,8 @@ def extract_target_polygon(poly_bbox, polygons, symmetric = False):
         
         return target
 
-def extract_streets(bbox, packed=True):
+   
+def extract_streets(bbox:list, packed=True, geom=True) -> list or dict:
     """Extracts the streets within the bbox as linestring objects,
     if packed==True it returns only a list of LineString objects (streets)"""
     d = dict() #every way has an id with 2 bounds
@@ -143,9 +147,10 @@ def extract_streets(bbox, packed=True):
     overpass_query = """
 [out:json][timeout:800];
 (way["highway"](bbox);>;);
-out skel geom;
+out body geom;
 
 """.replace("bbox",str(bbox).replace("[","").replace("]","")).replace("\n", "")
+    overpass_query = overpass_query.replace("geom", "") if not geom else overpass_query
     response = requests.get(overpass_url, params={'data': overpass_query})
     data = response.json()
     for element in data["elements"]:
@@ -163,7 +168,7 @@ out skel geom;
     return d
 
 
-def haversine(c1,c2):
+def haversine(c1:tuple, c2:tuple) -> float:
     """returns the haversine distance in Meters"""
     lat1, lon1, lat2, lon2 = c1[0], c1[1], c2[0], c2[1]
     
@@ -179,7 +184,7 @@ def haversine(c1,c2):
     return c * r * 1000
 
 
-def segment(line_list, size=10):
+def segment(line_list:list, size:int=10) -> list:
     """Takes a list of lines and segments them (if needed) """
     l1 = len(line_list)
     for line in line_list:   
@@ -192,7 +197,9 @@ def segment(line_list, size=10):
     return line_list if l1==l2 else segment(line_list)
 
 
-def gsv_point(facade, target, radius=15, meta_only=False):
+def gsv_point(facade:shapely.geometry.LineString,
+	      target:shapely.geometry.MultiPolygon,
+	      radius:int=15, meta_only=False) -> shapely.geometry.Point or dict :
     
     """locates the closest gsv point and returns its (lat, lon) as a Point Object
          Checks if the located gsv-point is within the corresponding
@@ -214,7 +221,7 @@ def gsv_point(facade, target, radius=15, meta_only=False):
     else: return
     
         
-def angle(facade):
+def angle(facade:shapely.geometry.LineString) -> float:
 
     if gsv_point(facade) != None:
         gsv_p = list(gsv_point(facade).coords)[0]
@@ -226,22 +233,22 @@ def angle(facade):
         return math.degrees(math.atan(tan_alpha)) 
   
 
-def triangle(facade):
+def triangle(facade:shapely.geometry.LineString) -> shapely.geometry.Polygon:
     """Creates a triangle with the points of the facade and the closest gsv point"""
     if gsv_point(facade) != None: 
         return Polygon([list(facade.coords)[0], list(facade.coords)[1], list(gsv_point(facade).coords)[0]] )
 
 
-def gsv_dist(facade):
+def gsv_dist(facade:shapely.geometry.LineString) -> float:
     """returns distance between facade centroid and corresponding gsv point"""
     return haversine(list(gsv_point(facade).coords)[0], list(facade.centroid.coords)[0])
  
-def length(facade):
+def length(facade:shapely.geometry.LineString) -> float:
     """returns length in meters"""
     return haversine(list(facade.coords)[0], list(facade.coords)[1])
 
 
-def match(facade, polygons, poly_bbox):
+def match(facade:shapely.geometry.LineString, polygons:list, poly_bbox:shapely.geometry.Polygon) -> str:
     """Exact, but extremely inefficient calculation on which facade belongs to which osm item"""
     d = dict()
     d2 = dict()
@@ -256,14 +263,14 @@ def match(facade, polygons, poly_bbox):
             return key2
   
 
-def match_0(facade):
+def match_0(facade:shapely.geometry.LineString) -> :shapely.geometry.Polygon:
     """matches a facade/segment to the corresponding osm building VER 000"""
     for polygon in polygons:
         for line in extract_facades([polygons[polygon]]):
             if facade.within(line):
                 return polygon  
             
-def extract_facades(boundary_list):
+def extract_facades(boundary_list:list) -> list:
     l = list()
     for facade in boundary_list:
         coords = list(facade.coords)
@@ -271,7 +278,8 @@ def extract_facades(boundary_list):
             l.append(LineString([coords[i], coords[i+1]]))
     return l 
 
-def get_gsv_data(facades, target, photogeometric_fov=True, as_dataframe=False):
+def get_gsv_data(facades:list, target:shapely.geometry.MultiPolygon,
+		 photogeometric_fov=True, as_dataframe=False) -> pd.DataFrame or dict:
     centroid = lambda x : list(x.centroid.coords)[0]
     length = lambda x : haversine(list(x.coords)[0], list(x.coords)[1])
     data = [ obs for obs in [{"facade" : facade,
