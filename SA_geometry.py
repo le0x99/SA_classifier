@@ -208,9 +208,10 @@ def segment(line_list:list, size:int=10) -> list:
 
 
 def gsv_point(facade:shapely.geometry.LineString,
-	      target:shapely.geometry.MultiPolygon=None,
-	      radius:int=15, meta_only=False) -> shapely.geometry.Point or dict :
-    
+              target:shapely.geometry.MultiPolygon=None,
+              bbox:shapely.geometry.Polygon=None,
+              radius:int=15, meta_only=False,
+              include_outer=False) -> shapely.geometry.Point or dict :
     """locates the closest gsv point and returns its (lat, lon) as a Point Object
          Checks if the located gsv-point is within the corresponding
          area of the target polygon which belongs to the input facade"""
@@ -222,6 +223,8 @@ def gsv_point(facade:shapely.geometry.LineString,
         return data
     if data["status"] == "OK" and "Google" in data["source"]:
         gsv_point = Point((data["location"]["lat"], data["location"]["lng"]))
+        if not gsv_point.within(bbox):
+            return
         if type(target) == shapely.geometry.multipolygon.MultiPolygon:        
             for t in target:
                 if facade.touches(t.boundary) or  facade.within(t.boundary):
