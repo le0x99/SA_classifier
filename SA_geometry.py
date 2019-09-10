@@ -3,13 +3,15 @@ import pandas as pd
 import sys
 import requests
 import warnings
-from math import radians, sin, asin, cos, tan, atan, sqrt
+from math import radians, sin, asin, cos, tan, atan, sqrt, atan2, degrees
+import random
 import matplotlib.pyplot as plt
 from shapely.geometry import Point, LineString, Polygon, MultiPoint, MultiPolygon, MultiLineString
 from shapely.wkt import loads as to_geo
 import shapely
 from UliEngineering.Math.Coordinates import BoundingBox
 
+plt.rcParams["figure.figsize"] = (8,8)
 
 if 'ipykernel' in sys.modules:
 	plt.rcParams["figure.dpi"] = 86
@@ -50,7 +52,10 @@ Plottable : LineStrings, Polys, MultiPolys, tuples"""
                 plot(list(obj.coords)[0], col)
             elif type(obj) == list and type(obj[0]) == shapely.geometry.point.Point:
                 for i in obj:
-                    plot(i, col)    
+                    plot(i, col)
+            elif type(obj) == list and type(obj[0]) == shapely.geometry.Polygon:
+                for i in obj:
+                    plot(i, col)   
             elif type(obj) == list and type(obj[0]) == tuple:
                 for i in obj:
                     plot(i, col, size)
@@ -70,6 +75,21 @@ def create_bbox(p:tuple, polygonize=True) -> shapely.geometry.Polygon or list:
     bbox = [float(x) for x in bbox]
     return bbox if not polygonize else Polygon([ (bbox[0], bbox[1]), (bbox[0], bbox[3]), (bbox[2], bbox[3]), (bbox[2], bbox[1])  ])
 
+def destination_point(p:tuple, bearing:int,
+                      d:float) -> tuple:
+        lat1, lon1 = p
+        lat1, lon1 = radians(lat1), radians(lon1)
+        R = 6378.1                   #Radius of the Earth
+        brng = radians(bearing) #convert degrees to radians
+        d = d/1000                  #convert to m
+        lat2 = asin( sin(lat1)*cos(d/R) + cos(lat1)*sin(d/R)*cos(brng))
+        lon2 = lon1 + atan2(sin(brng)*sin(d/R)*cos(lat1),cos(d/R)-sin(lat1)*sin(lat2))
+        return degrees(lat2), degrees(lon2)
+       
+def ellipse(p:tuple,
+            d:float=4.) -> shapely.geometry.Polygon:
+    return Polygon([destination_point(p, bearing,d) for bearing in range(0,361,10)])
+    
  
 def extract_polygons(bbox:list) -> dict:
     """Extract Polygon Objects from bbox area,
@@ -232,6 +252,28 @@ def gsv_point(facade:shapely.geometry.LineString,
                         return gsv_point
         else: return gsv_point
     else: return
+
+def evaluate_points(gsv_points:list) -> dict:
+    #model = load_classifier()
+    #model = load_classifier()
+    url = lambda lat, lon, heading : "https://maps.googleapis.com/maps/api/streetview?size=640x640&location="+str(lat)+"%2C"+str(lon)+"&source=outdoor&radius=0.5&heading="+str(heading)+"&pitch=10&key=AIzaSyCrjQChUxWzzcsRQt0SFeomIC0jN5vaDBo"
+    tuples = [ (_.coords.xy[0][0], _.coords.xy[1][0]) for _ in gsv_points ]
+    results = []
+    for point in tuples:
+        for heading in range(0,361,30):
+            img_url = url(point[0], point[1], heading )
+            #img = to_img(url=img_url, size=(224, 224))
+            #pred = predict_img(model=model, img=img)
+            pred = random.choice([1] + [0]*50)
+            if pred >= .99:
+                results.append( {        #"image" : img,
+                                          "point" : point,
+                                          "url" : img_url,
+                                          "heading" : heading })
+    return results#
+    
+
+
     
         
 def angle(facade:shapely.geometry.LineString) -> float:
