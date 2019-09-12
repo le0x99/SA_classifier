@@ -339,7 +339,7 @@ def match(facade:shapely.geometry.LineString, polygons:list, poly_bbox:shapely.g
             return key2
   
 
-def match_0(facade:shapely.geometry.LineString) -> :shapely.geometry.Polygon:
+def match_0(facade:shapely.geometry.LineString) -> shapely.geometry.Polygon:
     """matches a facade/segment to the corresponding osm building VER 000"""
     for polygon in polygons:
         for line in extract_facades([polygons[polygon]]):
