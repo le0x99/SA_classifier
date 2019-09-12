@@ -276,7 +276,7 @@ def evaluate_points(gsv_points:list,
                                           "ellipses" : [ellipse(point, d) for d in range(1, int(radius))],
                                           "url" : img_url,
                                           "heading" : heading,
-                                          "headingline" : LineString([(point[0], point[0]), 
+                                          "headingline" : LineString([(point[0], point[1]), 
                                                                       destination_point(point, heading, 5)])})
     if iter_ellipses:                                       
         for res in results:
