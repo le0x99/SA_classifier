@@ -89,7 +89,7 @@ def destination_point(p:tuple, bearing:int,
 def ellipse(p:tuple,
             d:float=4.) -> shapely.geometry.Polygon:
     return Polygon([destination_point(p, bearing,d) for bearing in range(0,361,10)])
-    
+            
  
 def extract_polygons(bbox:list) -> dict:
     """Extract Polygon Objects from bbox area,
@@ -252,8 +252,12 @@ def gsv_point(facade:shapely.geometry.LineString,
                         return gsv_point
         else: return gsv_point
     else: return
+    
+    
 
-def evaluate_points(gsv_points:list) -> dict:
+def evaluate_points(gsv_points:list,
+                    streets:list, radius=6,
+                    iter_ellipses=False) -> dict:#ellipse*1.82??
     #model = load_classifier()
     #model = load_classifier()
     url = lambda lat, lon, heading : "https://maps.googleapis.com/maps/api/streetview?size=640x640&location="+str(lat)+"%2C"+str(lon)+"&source=outdoor&radius=0.5&heading="+str(heading)+"&pitch=10&key=AIzaSyCrjQChUxWzzcsRQt0SFeomIC0jN5vaDBo"
@@ -264,13 +268,30 @@ def evaluate_points(gsv_points:list) -> dict:
             img_url = url(point[0], point[1], heading )
             #img = to_img(url=img_url, size=(224, 224))
             #pred = predict_img(model=model, img=img)
-            pred = random.choice([1] + [0]*50)
+            pred = random.choice([1] + [0]*120)
             if pred >= .99:
                 results.append( {        #"image" : img,
                                           "point" : point,
+                                          "ellipse" : ellipse(point, radius),
+                                          "ellipses" : [ellipse(point, d) for d in range(1, int(radius))],
                                           "url" : img_url,
-                                          "heading" : heading })
-    return results#
+                                          "heading" : heading,
+                                          "headingline" : LineString([(point[0], point[0]), 
+                                                                      destination_point(point, heading, 5)])})
+    if iter_ellipses:                                       
+        for res in results:
+            for circle in res["ellipses"]:
+                for street in streets:
+                    if circle.crosses(street):
+                        res["street"] = street
+    else:
+        for res in results:
+            res["streets"] = []
+            for street in streets:
+                if res["ellipse"].crosses(street):
+                    res["streets"].append(street)
+            
+        return results#
     
 
 
