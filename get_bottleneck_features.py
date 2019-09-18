@@ -19,7 +19,7 @@ train_data_dir = "data\\training"
 validation_data_dir = "data\\validation"
 img_width, img_height = 224, 224
 nb_train_samples, nb_validation_samples = 520, 100
-epochs, batch_size = 200, 16
+epochs, batch_size = 100, 16
 
 #### Get the bottleneck features
 
