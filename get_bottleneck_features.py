@@ -9,7 +9,7 @@ from math import ceil
 from keras.models import Sequential
 from keras.preprocessing.image import ImageDataGenerator
 from keras.layers import Dropout, Flatten, Dense
-from keras import applications
+from keras import applications, optimizers
 
 
 #### Pre-Settings
@@ -19,7 +19,7 @@ train_data_dir = "data\\training"
 validation_data_dir = "data\\validation"
 img_width, img_height = 224, 224
 nb_train_samples, nb_validation_samples = 520, 100
-epochs, batch_size = 100, 16
+epochs, batch_size = 100, 8
 
 #### Get the bottleneck features
 
@@ -82,7 +82,7 @@ model.add(Dropout(0.5))
 model.add(Dense(256, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(1, activation='sigmoid'))
-model.compile(optimizer='rmsprop',
+model.compile(optimizer=optimizers.Adagrad(lr=0.001, epsilon=None, decay=0.0),
               loss='binary_crossentropy', metrics=['accuracy'])
 # train the model
 model.fit(train_data, train_labels,
