@@ -1,5 +1,6 @@
 
 from keras.models import load_model
+from keras import optimizers
 import requests
 from PIL import Image
 from io import BytesIO
@@ -9,12 +10,12 @@ import numpy as np, os
 
 
 
-def load_classifier():
-    model = load_model('/Users/Leonard/Desktop/NN_imp/SA_classifier/config/SA_classifier.h5')
-    model.compile(loss='binary_crossentropy',
-              optimizer='rmsprop',
-              metrics=['accuracy'])
-    return model
+
+model = load_model('SA_classifier.h5')
+model.compile(loss='binary_crossentropy',
+          optimizer=optimizers.Adagrad(lr=0.001, epsilon=None, decay=0.0),
+          metrics=['accuracy'])
+
 
 
 def predict_img(model, img=None, img_path=None): 
@@ -22,7 +23,8 @@ def predict_img(model, img=None, img_path=None):
     img = load_img(img_path, target_size=(img_width, img_height)) if img_path!=None else img
     x = to_array(img)
     x = np.expand_dims(x, axis=0)
-    return model.predict(x)
+    pred = model.predict(x)
+    return pred[0][0]
     
 
 
