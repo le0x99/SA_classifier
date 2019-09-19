@@ -5,14 +5,11 @@ from SA_predict import img_to_disk
 from SA_geometry import *
 
 #Get the high rated flickr coordinates
-flickr_data = pd.read_csv("/Users/Leonard/Desktop/SA_project/study_area_flickr_photos.csv", sep=";")
+flickr_data = pd.read_csv("study_area_flickr_photos.csv", sep=";")
 #Sort data
-flickr_data = fcoords.sort_values(by=" Grade", ascending=False)
+flickr_data = flickr_data.sort_values(by=" Grade", ascending=False)
 #Get coords
-coords = [i for i in zip(flickr_data[" Lat"], flickr_data[" Lon"])]
-
-
-
+coords = [i for i in zip(flickr_data[" Lat"], flickr_data[" Lon"])][:50]
 def get_photos(coords, dest):
     #Create the surrounding bbox (see source)
     bbox = create_bbox(coords, polygonize=True)
@@ -36,5 +33,5 @@ def get_photos(coords, dest):
     img_to_disk(images=list(data["photo"]), destination=dest, randomize=True)
 
 
-for c in coords[0:100]:
+for c in coords:
     get_photos(coord=c, dest="data")
