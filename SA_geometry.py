@@ -296,6 +296,31 @@ def match(facade:shapely.geometry.LineString, polygons:list, poly_bbox:shapely.g
         if d2[key2] == min(d2.values()):
             return key2
   
+def quad_points(l:shapely.geometry.LineString, inc:int=4) -> shapely.geometry.LineString:
+    a  =  LineString([l.coords[:][0], l.centroid.coords[:][0]])
+    b  =  LineString([l.centroid.coords[:][0], l.coords[:][1]])
+    a_ = LineString([l.coords[:][0], a.centroid.coords[:][0]])
+    b_ = LineString([l.coords[:][1], b.centroid.coords[:][0]])
+    a__= LineString([l.centroid.coords[:][0], a.centroid.coords[:][0]])
+    b__= LineString([l.centroid.coords[:][0], b.centroid.coords[:][0]])
+    return LineString([l.coords[:][0],
+                        a_.centroid.coords[:][0],
+                        a.centroid.coords[:][0],
+                        a__.centroid.coords[:][0],
+                        l.centroid.coords[:][0],
+                        b__.centroid.coords[:][0],
+                        b.centroid.coords[:][0],
+                        b_.centroid.coords[:][0],
+                        l.coords[:][1]])
+
+def double_points(l:shapely.geometry.LineString) -> shapely.geometry.LineString:
+    a = LineString([l.coords[:][0], l.centroid.coords[:][0]])
+    b = LineString([l.centroid.coords[:][0], l.coords[:][1]])
+    return  LineString([l.coords[:][0],
+                        a.centroid.coords[:][0],
+                        l.centroid.coords[:][0],
+                        b.centroid.coords[:][0],
+                        l.coords[:][1]]) 
 
 def match_0(facade:shapely.geometry.LineString) -> shapely.geometry.Polygon:
     """matches a facade/segment to the corresponding osm building VER 000"""
