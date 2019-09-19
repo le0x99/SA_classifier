@@ -11,7 +11,7 @@ from shapely.wkt import loads as to_geo
 import shapely
 from UliEngineering.Math.Coordinates import BoundingBox
 
-plt.rcParams["figure.figsize"] = (8,8)
+plt.rcParams["figure.figsize"] = (12,12)
 
 if 'ipykernel' in sys.modules:
 	plt.rcParams["figure.dpi"] = 86
@@ -253,48 +253,6 @@ def gsv_point(facade:shapely.geometry.LineString,
         else: return gsv_point
     else: return
     
-    
-
-def evaluate_points(gsv_points:list,
-                    streets:list, radius=6,
-                    iter_ellipses=False) -> dict:#ellipse*1.82??
-    #model = load_classifier()
-    #model = load_classifier()
-    url = lambda lat, lon, heading : "https://maps.googleapis.com/maps/api/streetview?size=640x640&location="+str(lat)+"%2C"+str(lon)+"&source=outdoor&radius=0.5&heading="+str(heading)+"&pitch=10&key=AIzaSyCrjQChUxWzzcsRQt0SFeomIC0jN5vaDBo"
-    tuples = [ (_.coords.xy[0][0], _.coords.xy[1][0]) for _ in gsv_points ]
-    results = []
-    for point in tuples:
-        for heading in range(0,361,30):
-            img_url = url(point[0], point[1], heading )
-            #img = to_img(url=img_url, size=(224, 224))
-            #pred = predict_img(model=model, img=img)
-            pred = random.choice([1] + [0]*120)
-            if pred >= .99:
-                results.append( {        #"image" : img,
-                                          "point" : point,
-                                          "ellipse" : ellipse(point, radius),
-                                          "ellipses" : [ellipse(point, d) for d in range(1, int(radius))],
-                                          "url" : img_url,
-                                          "heading" : heading,
-                                          "headingline" : LineString([(point[0], point[1]), 
-                                                                      destination_point(point, heading, 5)])})
-    if iter_ellipses:                                       
-        for res in results:
-            for circle in res["ellipses"]:
-                for street in streets:
-                    if circle.crosses(street):
-                        res["street"] = street
-    else:
-        for res in results:
-            res["streets"] = []
-            for street in streets:
-                if res["ellipse"].crosses(street):
-                    res["streets"].append(street)
-            
-        return results#
-    
-
-
     
         
 def angle(facade:shapely.geometry.LineString) -> float:
