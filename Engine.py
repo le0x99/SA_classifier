@@ -39,9 +39,9 @@ class Environment(object):
         gsv_points = [ gsv_point(f, self.target, self.bbox) for f in self.facades ]
         self.gsv_points = [ i for i in gsv_points if i != None ]
         
-    def evaluate(self, model, radius:float=5,
+    def evaluate(self, model,gsv_key:str, radius:float=5,
                  dirrlength:float=40):
-        url = lambda lat, lon, heading : "https://maps.googleapis.com/maps/api/streetview?size=640x640&location="+str(lat)+"%2C"+str(lon)+"&source=outdoor&radius=1&heading="+str(heading)+"&pitch=10&key=AIzaSyCrjQChUxWzzcsRQt0SFeomIC0jN5vaDBo"
+        url = lambda lat, lon, heading : "https://maps.googleapis.com/maps/api/streetview?size=640x640&location="+str(lat)+"%2C"+str(lon)+"&source=outdoor&radius=1&heading="+str(heading)+"&pitch=10&key={}".format(gsv_key)
         make_line = lambda p_, l, h : LineString([p_, destination_point(p_, h, l)]) 
         tuples = [ (_.coords.xy[0][0], _.coords.xy[1][0]) for _ in self.gsv_points ]
         self.results = list()
@@ -50,6 +50,7 @@ class Environment(object):
         for point in tqdm(tuples):
                 for heading in range(0,361,30):
                     img_url = url(point[0], point[1], heading ) if model != None else None
+                    #print(img_url)
                     img = to_img(url=img_url, size=(224, 224)) if model != None else None
                     pred = predict_img(model=model, img=img) if model != None else random.choice([1] + [0]*110)
                     if pred >= .99:
