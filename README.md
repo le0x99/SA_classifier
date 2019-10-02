@@ -1,4 +1,7 @@
-# SA_classifier
+# Street Art Detection Engine
+
+<img src="https://media.giphy.com/media/h7F2IB4mqBGTKfqtGs/giphy.gif" />
+
 
 Relevant Code for the paper *Detecting Building Facades with Graffiti ArtworkBased on Street View Images*
 
