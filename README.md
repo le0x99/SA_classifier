@@ -1,9 +1,10 @@
 # Street Art Detection Engine
 
-<img src="https://media.giphy.com/media/h7F2IB4mqBGTKfqtGs/giphy.gif" />
+<img src="animated.gif" />
 
+<img src="final.png" />
 
-Relevant Code for the paper *Detecting Building Facades with Graffiti ArtworkBased on Street View Images*
+## Relevant Code for the paper *Detecting Building Facades with Graffiti ArtworkBased on Street View Images*
 
 ## Code Navigation
 
