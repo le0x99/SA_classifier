@@ -1,20 +1,12 @@
 # Street Art Detection Engine
 
-<img src="animated.gif" />
+  <img src="final.png"/>
 
-<img src="final.png" />
 
 ## Relevant Code for the paper *Detecting Building Facades with Graffiti ArtworkBased on Street View Images*
 
 ## Code Navigation
 
-### SA_geometry
-### SA_predict
-### get_bottleneck_features
-### build_network
-### replicate_network_structure
-### Engine
-### collect_training
 
 
 
@@ -22,6 +14,8 @@
 
 
 # Example Demo
+
+ <img src="animated.gif"/>
 
 ```python
 from Engine import Environment
