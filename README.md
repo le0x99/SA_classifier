@@ -5,7 +5,6 @@
 
 ## Relevant Code for the paper *Detecting Building Facades with Graffiti ArtworkBased on Street View Images*
 
-## Code Navigation
 
 
 
@@ -38,7 +37,7 @@ plot(env.facades, "orange");
 plot(env.streets, "white");
 
 ```
-![image.png](1.png)
+  <img src="1.png" width=350 height=300/>
 
 Evaluate the gsv points within the area of the environment. 
 ```python
@@ -59,7 +58,7 @@ plot(env.intersection_points, "red");
 plot(env.headinglines, "violet")
 
 ```
-![image.png](2.png)
+  <img src="2.png" width=350 height=300/>
 
 Show relevant facades
 ```python
@@ -71,5 +70,5 @@ plot(env.sa_facades, "violet");
 plot(env.intersection_points, "red")
 
 ```
-![image.png](3.png)
+  <img src="3.png" width=350 height=300/>
 
