@@ -279,7 +279,7 @@ def gsv_dist(facade:shapely.geometry.LineString) -> float:
  
 def length(facade:shapely.geometry.LineString) -> float:
     """returns length in meters"""
-    return haversine(list(facade.coords)[0], list(facade.coords)[1])
+    return haversine(list(facade.coords)[0], list(facade.coords)[-1])
 
 
 def match(facade:shapely.geometry.LineString, polygons:list, poly_bbox:shapely.geometry.Polygon) -> str:
