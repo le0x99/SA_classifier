@@ -87,8 +87,8 @@ def destination_point(p:tuple, bearing:int,
         return degrees(lat2), degrees(lon2)
        
 def ellipse(p:tuple,
-            d:float=4.) -> shapely.geometry.Polygon:
-    return Polygon([destination_point(p, bearing,d) for bearing in range(0,361,10)])
+            r:float=4.) -> shapely.geometry.Polygon:
+    return Polygon([destination_point(p, bearing, r) for bearing in range(0,361,10)])
             
  
 def extract_polygons(bbox:list) -> dict:
